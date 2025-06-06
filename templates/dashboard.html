@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="flex justify-between items-center mb-8">
+        <h1 class="text-3xl font-bold">Meine Einkaufslisten</h1>
+        <button onclick="showNewListModal()" class="btn-primary px-4 py-2 rounded">
+            <i class="fas fa-plus mr-2"></i>Neue Liste
+        </button>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for list in current_user.shopping_lists %}
+        <div class="card p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-semibold">{{ list.name }}</h3>
+                <div class="space-x-2">
+                    <button onclick="editList({{ list.id }})" class="text-gray-400 hover:text-white">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button onclick="deleteList({{ list.id }})" class="text-gray-400 hover:text-white">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="space-y-2">
+                {% for item in list.items %}
+                <div class="flex items-center justify-between p-2 bg-gray-800 rounded">
+                    <div class="flex items-center">
+                        <i class="fas fa-{{ item.icon }} mr-2"></i>
+                        <span class="{% if item.completed %}line-through text-gray-500{% endif %}">
+                            {{ item.name }}
+                        </span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button onclick="toggleItem({{ item.id }})" class="text-gray-400 hover:text-white">
+                            <i class="fas {% if item.completed %}fa-undo{% else %}fa-check{% endif %}"></i>
+                        </button>
+                        <button onclick="editItem({{ item.id }})" class="text-gray-400 hover:text-white">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button onclick="deleteItem({{ item.id }})" class="text-gray-400 hover:text-white">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <button onclick="showAddItemModal({{ list.id }})" class="mt-4 w-full py-2 bg-gray-700 hover:bg-gray-600 rounded text-white">
+                <i class="fas fa-plus mr-2"></i>Artikel hinzufügen
+            </button>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Modals -->
+<div id="newListModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center">
+    <div class="card p-6 w-full max-w-md">
+        <h3 class="text-xl font-bold mb-4">Neue Einkaufsliste</h3>
+        <form id="newListForm" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-1">Name</label>
+                <input type="text" name="name" required class="input-field w-full px-4 py-2 rounded">
+            </div>
+            <div class="flex justify-end space-x-2">
+                <button type="button" onclick="hideNewListModal()" class="px-4 py-2 bg-gray-600 rounded text-white">
+                    Abbrechen
+                </button>
+                <button type="submit" class="btn-primary px-4 py-2 rounded">
+                    Erstellen
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="addItemModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center">
+    <div class="card p-6 w-full max-w-md">
+        <h3 class="text-xl font-bold mb-4">Artikel hinzufügen</h3>
+        <form id="addItemForm" class="space-y-4">
+            <input type="hidden" name="list_id" id="itemListId">
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-1">Name</label>
+                <input type="text" name="name" required class="input-field w-full px-4 py-2 rounded">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-1">Icon</label>
+                <select name="icon" class="input-field w-full px-4 py-2 rounded">
+                    <option value="shopping-cart">Einkaufswagen</option>
+                    <option value="apple-alt">Apfel</option>
+                    <option value="bread-slice">Brot</option>
+                    <option value="cheese">Käse</option>
+                    <option value="wine-bottle">Wein</option>
+                    <option value="beer">Bier</option>
+                    <option value="pizza-slice">Pizza</option>
+                    <option value="hamburger">Burger</option>
+                </select>
+            </div>
+            <div class="flex justify-end space-x-2">
+                <button type="button" onclick="hideAddItemModal()" class="px-4 py-2 bg-gray-600 rounded text-white">
+                    Abbrechen
+                </button>
+                <button type="submit" class="btn-primary px-4 py-2 rounded">
+                    Hinzufügen
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function showNewListModal() {
+    document.getElementById('newListModal').classList.remove('hidden');
+}
+
+function hideNewListModal() {
+    document.getElementById('newListModal').classList.add('hidden');
+}
+
+function showAddItemModal(listId) {
+    document.getElementById('itemListId').value = listId;
+    document.getElementById('addItemModal').classList.remove('hidden');
+}
+
+function hideAddItemModal() {
+    document.getElementById('addItemModal').classList.add('hidden');
+}
+
+// Hier werden später die AJAX-Funktionen für die Interaktionen implementiert
+</script>
+{% endblock %} 

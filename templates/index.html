@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto text-center">
+    <h1 class="text-5xl font-bold mb-6">Willkommen bei Einkaufslisten</h1>
+    <p class="text-xl text-gray-400 mb-8">
+        Erstellen und verwalten Sie Ihre Einkaufslisten gemeinsam mit Ihrer Gruppe.
+    </p>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-2xl mx-auto">
+        <div class="card p-6">
+            <h2 class="text-2xl font-bold mb-4">Bereits registriert?</h2>
+            <p class="text-gray-400 mb-6">Melden Sie sich an, um auf Ihre Einkaufslisten zuzugreifen.</p>
+            <a href="{{ url_for('login') }}" class="btn-primary block w-full py-3 rounded text-center">
+                Anmelden
+            </a>
+        </div>
+        
+        <div class="card p-6">
+            <h2 class="text-2xl font-bold mb-4">Neue Gruppe?</h2>
+            <p class="text-gray-400 mb-6">Registrieren Sie sich, um eine neue Gruppe zu erstellen.</p>
+            <a href="{{ url_for('register') }}" class="btn-primary block w-full py-3 rounded text-center">
+                Registrieren
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %} 

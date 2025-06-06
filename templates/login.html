@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-md mx-auto">
+    <div class="card p-8">
+        <h2 class="text-2xl font-bold mb-6 text-center">Anmelden</h2>
+        <form method="POST" class="space-y-4">
+            <div>
+                <label for="group_name" class="block text-sm font-medium text-gray-300 mb-1">Gruppenname</label>
+                <input type="text" id="group_name" name="group_name" required
+                    class="input-field w-full px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+                <label for="password" class="block text-sm font-medium text-gray-300 mb-1">Passwort</label>
+                <input type="password" id="password" name="password" required
+                    class="input-field w-full px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <button type="submit" class="btn-primary w-full py-2 rounded font-medium">
+                Anmelden
+            </button>
+        </form>
+        <div class="mt-4 text-center">
+            <p class="text-gray-400">Noch keine Gruppe? <a href="{{ url_for('register') }}" class="text-blue-400 hover:text-blue-300">Registrieren</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %} 
