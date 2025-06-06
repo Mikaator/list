@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="max-w-4xl mx-auto">
+<div class="max-w-6xl mx-auto">
     <div class="flex justify-between items-center mb-8" data-aos="fade-down">
         <h1 class="text-3xl font-bold">Meine Einkaufslisten</h1>
         <button onclick="showNewListModal()" class="btn-primary px-4 py-2 rounded-lg flex items-center group">
@@ -10,7 +10,7 @@
         </button>
     </div>
 
-    <div id="listsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div id="listsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-6">
         {% for list in current_user.shopping_lists %}
         <div class="card p-6" data-aos="fade-up" data-aos-delay="{{ loop.index * 100 }}" data-list-id="{{ list.id }}">
             <div class="flex justify-between items-center mb-4">
@@ -34,10 +34,10 @@
                         </span>
                     </div>
                     <div class="flex items-center space-x-2">
-                        <button onclick="toggleItem({{ item.id }})" class="text-gray-400 hover:text-green-500 transition-colors duration-200">
+                        <button onclick="toggleItem({{ item.id }}, {{ 'true' if not item.completed else 'false' }})" class="text-gray-400 hover:text-green-500 transition-colors duration-200">
                             <i class="fas {% if item.completed %}fa-undo{% else %}fa-check{% endif %}"></i>
                         </button>
-                        <button onclick="editItem({{ item.id }})" class="text-gray-400 hover:text-blue-500 transition-colors duration-200">
+                        <button onclick="showEditItemModal({{ item.id }}, '{{ item.name }}', '{{ item.icon }}')" class="text-gray-400 hover:text-blue-500 transition-colors duration-200">
                             <i class="fas fa-edit"></i>
                         </button>
                         <button onclick="deleteItem({{ item.id }})" class="text-gray-400 hover:text-red-500 transition-colors duration-200">
@@ -71,6 +71,40 @@
                 </button>
                 <button type="submit" class="btn-primary px-4 py-2 rounded-lg">
                     Erstellen
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="editItemModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center z-50">
+    <div class="card p-6 w-full max-w-md modal">
+        <h3 class="text-xl font-bold mb-4">Artikel bearbeiten</h3>
+        <form id="editItemForm" class="space-y-4">
+            <input type="hidden" name="item_id" id="editItemId">
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-1">Name</label>
+                <input type="text" name="name" id="editItemName" required class="input-field w-full px-4 py-2 rounded-lg">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-1">Icon</label>
+                <select name="icon" id="editItemIcon" class="input-field w-full px-4 py-2 rounded-lg">
+                    <option value="shopping-cart">Einkaufswagen</option>
+                    <option value="apple-alt">Apfel</option>
+                    <option value="bread-slice">Brot</option>
+                    <option value="cheese">Käse</option>
+                    <option value="wine-bottle">Wein</option>
+                    <option value="beer">Bier</option>
+                    <option value="pizza-slice">Pizza</option>
+                    <option value="hamburger">Burger</option>
+                </select>
+            </div>
+            <div class="flex justify-end space-x-2">
+                <button type="button" onclick="hideEditItemModal()" class="px-4 py-2 bg-gray-600/50 hover:bg-gray-600 rounded-lg text-white transition-colors duration-200">
+                    Abbrechen
+                </button>
+                <button type="submit" class="btn-primary px-4 py-2 rounded-lg">
+                    Speichern
                 </button>
             </div>
         </form>
@@ -136,6 +170,20 @@ function hideAddItemModal() {
     modal.classList.add('hidden');
 }
 
+function showEditItemModal(itemId, name, icon) {
+    document.getElementById('editItemId').value = itemId;
+    document.getElementById('editItemName').value = name;
+    document.getElementById('editItemIcon').value = icon;
+    const modal = document.getElementById('editItemModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('fade-in');
+}
+
+function hideEditItemModal() {
+    const modal = document.getElementById('editItemModal');
+    modal.classList.add('hidden');
+}
+
 // Listen-Funktionen
 document.getElementById('newListForm').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -154,8 +202,7 @@ document.getElementById('newListForm').addEventListener('submit', async (e) => {
         });
 
         if (response.ok) {
-            const list = await response.json();
-            location.reload(); // Seite neu laden um die neue Liste anzuzeigen
+            location.reload();
         } else {
             alert('Fehler beim Erstellen der Liste');
         }
@@ -176,7 +223,7 @@ async function deleteList(listId) {
         });
 
         if (response.ok) {
-            location.reload(); // Seite neu laden
+            location.reload();
         } else {
             alert('Fehler beim Löschen der Liste');
         }
@@ -206,7 +253,7 @@ document.getElementById('addItemForm').addEventListener('submit', async (e) => {
         });
 
         if (response.ok) {
-            location.reload(); // Seite neu laden
+            location.reload();
         } else {
             alert('Fehler beim Hinzufügen des Artikels');
         }
@@ -218,18 +265,49 @@ document.getElementById('addItemForm').addEventListener('submit', async (e) => {
     hideAddItemModal();
 });
 
-async function toggleItem(itemId) {
+document.getElementById('editItemForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const itemId = formData.get('item_id');
+    const data = {
+        name: formData.get('name'),
+        icon: formData.get('icon')
+    };
+
     try {
         const response = await fetch(`/api/items/${itemId}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ completed: true })
+            body: JSON.stringify(data)
         });
 
         if (response.ok) {
-            location.reload(); // Seite neu laden
+            location.reload();
+        } else {
+            alert('Fehler beim Bearbeiten des Artikels');
+        }
+    } catch (error) {
+        console.error('Fehler:', error);
+        alert('Fehler beim Bearbeiten des Artikels');
+    }
+
+    hideEditItemModal();
+});
+
+async function toggleItem(itemId, completed) {
+    try {
+        const response = await fetch(`/api/items/${itemId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ completed: completed })
+        });
+
+        if (response.ok) {
+            location.reload();
         } else {
             alert('Fehler beim Aktualisieren des Artikels');
         }
@@ -248,7 +326,7 @@ async function deleteItem(itemId) {
         });
 
         if (response.ok) {
-            location.reload(); // Seite neu laden
+            location.reload();
         } else {
             alert('Fehler beim Löschen des Artikels');
         }
@@ -262,12 +340,16 @@ async function deleteItem(itemId) {
 document.addEventListener('click', (e) => {
     const newListModal = document.getElementById('newListModal');
     const addItemModal = document.getElementById('addItemModal');
+    const editItemModal = document.getElementById('editItemModal');
     
     if (e.target === newListModal) {
         hideNewListModal();
     }
     if (e.target === addItemModal) {
         hideAddItemModal();
+    }
+    if (e.target === editItemModal) {
+        hideEditItemModal();
     }
 });
 </script>
