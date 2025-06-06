@@ -50,6 +50,18 @@ class Item(db.Model):
 def load_user(user_id):
     return Group.query.get(int(user_id))
 
+# Datenbank initialisieren
+def init_db():
+    with app.app_context():
+        try:
+            db.create_all()
+            print("Datenbank erfolgreich initialisiert!")
+        except Exception as e:
+            print(f"Fehler bei der Datenbankinitialisierung: {str(e)}")
+
+# Initialisiere die Datenbank beim Start
+init_db()
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -188,10 +200,4 @@ def delete_item(item_id):
     return jsonify({'success': True})
 
 if __name__ == '__main__':
-    with app.app_context():
-        try:
-            db.create_all()
-            print("Datenbank erfolgreich initialisiert!")
-        except Exception as e:
-            print(f"Fehler bei der Datenbankinitialisierung: {str(e)}")
     app.run(debug=True) 
