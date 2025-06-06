@@ -10,9 +10,9 @@
         </button>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div id="listsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {% for list in current_user.shopping_lists %}
-        <div class="card p-6" data-aos="fade-up" data-aos-delay="{{ loop.index * 100 }}">
+        <div class="card p-6" data-aos="fade-up" data-aos-delay="{{ loop.index * 100 }}" data-list-id="{{ list.id }}">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-xl font-semibold">{{ list.name }}</h3>
                 <div class="space-x-2">
@@ -24,9 +24,9 @@
                     </button>
                 </div>
             </div>
-            <div class="space-y-2">
+            <div class="space-y-2" id="items-{{ list.id }}">
                 {% for item in list.items %}
-                <div class="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg backdrop-blur-sm hover:bg-gray-800/70 transition-all duration-200" data-aos="fade-up" data-aos-delay="{{ loop.index * 50 }}">
+                <div class="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg backdrop-blur-sm hover:bg-gray-800/70 transition-all duration-200" data-aos="fade-up" data-aos-delay="{{ loop.index * 50 }}" data-item-id="{{ item.id }}">
                     <div class="flex items-center">
                         <i class="fas fa-{{ item.icon }} mr-3 text-primary"></i>
                         <span class="{% if item.completed %}line-through text-gray-500{% endif %}">
@@ -112,6 +112,7 @@
 </div>
 
 <script>
+// Modals
 function showNewListModal() {
     const modal = document.getElementById('newListModal');
     modal.classList.remove('hidden');
@@ -133,6 +134,128 @@ function showAddItemModal(listId) {
 function hideAddItemModal() {
     const modal = document.getElementById('addItemModal');
     modal.classList.add('hidden');
+}
+
+// Listen-Funktionen
+document.getElementById('newListForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const data = {
+        name: formData.get('name')
+    };
+
+    try {
+        const response = await fetch('/api/lists', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+            const list = await response.json();
+            location.reload(); // Seite neu laden um die neue Liste anzuzeigen
+        } else {
+            alert('Fehler beim Erstellen der Liste');
+        }
+    } catch (error) {
+        console.error('Fehler:', error);
+        alert('Fehler beim Erstellen der Liste');
+    }
+
+    hideNewListModal();
+});
+
+async function deleteList(listId) {
+    if (!confirm('Möchten Sie diese Liste wirklich löschen?')) return;
+
+    try {
+        const response = await fetch(`/api/lists/${listId}`, {
+            method: 'DELETE'
+        });
+
+        if (response.ok) {
+            location.reload(); // Seite neu laden
+        } else {
+            alert('Fehler beim Löschen der Liste');
+        }
+    } catch (error) {
+        console.error('Fehler:', error);
+        alert('Fehler beim Löschen der Liste');
+    }
+}
+
+// Item-Funktionen
+document.getElementById('addItemForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const data = {
+        name: formData.get('name'),
+        icon: formData.get('icon'),
+        list_id: formData.get('list_id')
+    };
+
+    try {
+        const response = await fetch('/api/items', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+            location.reload(); // Seite neu laden
+        } else {
+            alert('Fehler beim Hinzufügen des Artikels');
+        }
+    } catch (error) {
+        console.error('Fehler:', error);
+        alert('Fehler beim Hinzufügen des Artikels');
+    }
+
+    hideAddItemModal();
+});
+
+async function toggleItem(itemId) {
+    try {
+        const response = await fetch(`/api/items/${itemId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ completed: true })
+        });
+
+        if (response.ok) {
+            location.reload(); // Seite neu laden
+        } else {
+            alert('Fehler beim Aktualisieren des Artikels');
+        }
+    } catch (error) {
+        console.error('Fehler:', error);
+        alert('Fehler beim Aktualisieren des Artikels');
+    }
+}
+
+async function deleteItem(itemId) {
+    if (!confirm('Möchten Sie diesen Artikel wirklich löschen?')) return;
+
+    try {
+        const response = await fetch(`/api/items/${itemId}`, {
+            method: 'DELETE'
+        });
+
+        if (response.ok) {
+            location.reload(); // Seite neu laden
+        } else {
+            alert('Fehler beim Löschen des Artikels');
+        }
+    } catch (error) {
+        console.error('Fehler:', error);
+        alert('Fehler beim Löschen des Artikels');
+    }
 }
 
 // Schließen der Modals bei Klick außerhalb
