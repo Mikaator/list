@@ -2,26 +2,68 @@
 
 {% block content %}
 <div class="max-w-4xl mx-auto text-center">
-    <h1 class="text-5xl font-bold mb-6">Willkommen bei Einkaufslisten</h1>
-    <p class="text-xl text-gray-400 mb-8">
-        Erstellen und verwalten Sie Ihre Einkaufslisten gemeinsam mit Ihrer Gruppe.
-    </p>
+    <div data-aos="fade-down" data-aos-duration="1000">
+        <h1 class="text-5xl font-bold mb-6 bg-gradient-to-r from-blue-500 to-purple-500 text-transparent bg-clip-text">
+            Willkommen bei Einkaufslisten
+        </h1>
+        <p class="text-xl text-gray-400 mb-12">
+            Erstellen und verwalten Sie Ihre Einkaufslisten gemeinsam mit Ihrer Gruppe.
+        </p>
+    </div>
     
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-2xl mx-auto">
-        <div class="card p-6">
+        <div class="card p-8 transform hover:scale-105 transition-transform duration-300" data-aos="fade-right" data-aos-delay="200">
+            <div class="text-4xl mb-4 text-primary">
+                <i class="fas fa-sign-in-alt"></i>
+            </div>
             <h2 class="text-2xl font-bold mb-4">Bereits registriert?</h2>
             <p class="text-gray-400 mb-6">Melden Sie sich an, um auf Ihre Einkaufslisten zuzugreifen.</p>
-            <a href="{{ url_for('login') }}" class="btn-primary block w-full py-3 rounded text-center">
-                Anmelden
+            <a href="{{ url_for('login') }}" class="btn-primary block w-full py-3 rounded-lg text-center group">
+                <span class="flex items-center justify-center">
+                    <i class="fas fa-arrow-right mr-2 group-hover:translate-x-1 transition-transform duration-300"></i>
+                    Anmelden
+                </span>
             </a>
         </div>
         
-        <div class="card p-6">
+        <div class="card p-8 transform hover:scale-105 transition-transform duration-300" data-aos="fade-left" data-aos-delay="400">
+            <div class="text-4xl mb-4 text-primary">
+                <i class="fas fa-user-plus"></i>
+            </div>
             <h2 class="text-2xl font-bold mb-4">Neue Gruppe?</h2>
             <p class="text-gray-400 mb-6">Registrieren Sie sich, um eine neue Gruppe zu erstellen.</p>
-            <a href="{{ url_for('register') }}" class="btn-primary block w-full py-3 rounded text-center">
-                Registrieren
+            <a href="{{ url_for('register') }}" class="btn-primary block w-full py-3 rounded-lg text-center group">
+                <span class="flex items-center justify-center">
+                    <i class="fas fa-arrow-right mr-2 group-hover:translate-x-1 transition-transform duration-300"></i>
+                    Registrieren
+                </span>
             </a>
+        </div>
+    </div>
+
+    <div class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8" data-aos="fade-up" data-aos-delay="600">
+        <div class="card p-6">
+            <div class="text-3xl mb-4 text-primary">
+                <i class="fas fa-users"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-2">Gruppenarbeit</h3>
+            <p class="text-gray-400">Teilen Sie Ihre Einkaufslisten mit Ihrer Gruppe</p>
+        </div>
+        
+        <div class="card p-6">
+            <div class="text-3xl mb-4 text-primary">
+                <i class="fas fa-tasks"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-2">Einfache Verwaltung</h3>
+            <p class="text-gray-400">Erstellen und verwalten Sie Listen mühelos</p>
+        </div>
+        
+        <div class="card p-6">
+            <div class="text-3xl mb-4 text-primary">
+                <i class="fas fa-mobile-alt"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-2">Mobil optimiert</h3>
+            <p class="text-gray-400">Zugriff von überall auf Ihre Listen</p>
         </div>
     </div>
 </div>

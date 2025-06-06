@@ -3,10 +3,17 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
+from urllib.parse import urlparse
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-key-123')
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///shopping.db')
+
+# Datenbank-URL für Render.com anpassen
+database_url = os.environ.get('DATABASE_URL', 'sqlite:///shopping.db')
+if database_url.startswith("postgres://"):
+    database_url = database_url.replace("postgres://", "postgresql://", 1)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -182,5 +189,9 @@ def delete_item(item_id):
 
 if __name__ == '__main__':
     with app.app_context():
-        db.create_all()
+        try:
+            db.create_all()
+            print("Datenbank erfolgreich initialisiert!")
+        except Exception as e:
+            print(f"Fehler bei der Datenbankinitialisierung: {str(e)}")
     app.run(debug=True) 

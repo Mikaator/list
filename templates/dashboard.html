@@ -2,52 +2,54 @@
 
 {% block content %}
 <div class="max-w-4xl mx-auto">
-    <div class="flex justify-between items-center mb-8">
+    <div class="flex justify-between items-center mb-8" data-aos="fade-down">
         <h1 class="text-3xl font-bold">Meine Einkaufslisten</h1>
-        <button onclick="showNewListModal()" class="btn-primary px-4 py-2 rounded">
-            <i class="fas fa-plus mr-2"></i>Neue Liste
+        <button onclick="showNewListModal()" class="btn-primary px-4 py-2 rounded-lg flex items-center group">
+            <i class="fas fa-plus mr-2 group-hover:rotate-90 transition-transform duration-300"></i>
+            <span>Neue Liste</span>
         </button>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {% for list in current_user.shopping_lists %}
-        <div class="card p-6">
+        <div class="card p-6" data-aos="fade-up" data-aos-delay="{{ loop.index * 100 }}">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-xl font-semibold">{{ list.name }}</h3>
                 <div class="space-x-2">
-                    <button onclick="editList({{ list.id }})" class="text-gray-400 hover:text-white">
+                    <button onclick="editList({{ list.id }})" class="text-gray-400 hover:text-white transition-colors duration-200">
                         <i class="fas fa-edit"></i>
                     </button>
-                    <button onclick="deleteList({{ list.id }})" class="text-gray-400 hover:text-white">
+                    <button onclick="deleteList({{ list.id }})" class="text-gray-400 hover:text-red-500 transition-colors duration-200">
                         <i class="fas fa-trash"></i>
                     </button>
                 </div>
             </div>
             <div class="space-y-2">
                 {% for item in list.items %}
-                <div class="flex items-center justify-between p-2 bg-gray-800 rounded">
+                <div class="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg backdrop-blur-sm hover:bg-gray-800/70 transition-all duration-200" data-aos="fade-up" data-aos-delay="{{ loop.index * 50 }}">
                     <div class="flex items-center">
-                        <i class="fas fa-{{ item.icon }} mr-2"></i>
+                        <i class="fas fa-{{ item.icon }} mr-3 text-primary"></i>
                         <span class="{% if item.completed %}line-through text-gray-500{% endif %}">
                             {{ item.name }}
                         </span>
                     </div>
                     <div class="flex items-center space-x-2">
-                        <button onclick="toggleItem({{ item.id }})" class="text-gray-400 hover:text-white">
+                        <button onclick="toggleItem({{ item.id }})" class="text-gray-400 hover:text-green-500 transition-colors duration-200">
                             <i class="fas {% if item.completed %}fa-undo{% else %}fa-check{% endif %}"></i>
                         </button>
-                        <button onclick="editItem({{ item.id }})" class="text-gray-400 hover:text-white">
+                        <button onclick="editItem({{ item.id }})" class="text-gray-400 hover:text-blue-500 transition-colors duration-200">
                             <i class="fas fa-edit"></i>
                         </button>
-                        <button onclick="deleteItem({{ item.id }})" class="text-gray-400 hover:text-white">
+                        <button onclick="deleteItem({{ item.id }})" class="text-gray-400 hover:text-red-500 transition-colors duration-200">
                             <i class="fas fa-trash"></i>
                         </button>
                     </div>
                 </div>
                 {% endfor %}
             </div>
-            <button onclick="showAddItemModal({{ list.id }})" class="mt-4 w-full py-2 bg-gray-700 hover:bg-gray-600 rounded text-white">
-                <i class="fas fa-plus mr-2"></i>Artikel hinzufügen
+            <button onclick="showAddItemModal({{ list.id }})" class="mt-4 w-full py-2 bg-gray-700/50 hover:bg-gray-700 rounded-lg text-white transition-all duration-200 flex items-center justify-center group">
+                <i class="fas fa-plus mr-2 group-hover:rotate-90 transition-transform duration-300"></i>
+                <span>Artikel hinzufügen</span>
             </button>
         </div>
         {% endfor %}
@@ -55,19 +57,19 @@
 </div>
 
 <!-- Modals -->
-<div id="newListModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center">
-    <div class="card p-6 w-full max-w-md">
+<div id="newListModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center z-50">
+    <div class="card p-6 w-full max-w-md modal">
         <h3 class="text-xl font-bold mb-4">Neue Einkaufsliste</h3>
         <form id="newListForm" class="space-y-4">
             <div>
                 <label class="block text-sm font-medium text-gray-300 mb-1">Name</label>
-                <input type="text" name="name" required class="input-field w-full px-4 py-2 rounded">
+                <input type="text" name="name" required class="input-field w-full px-4 py-2 rounded-lg">
             </div>
             <div class="flex justify-end space-x-2">
-                <button type="button" onclick="hideNewListModal()" class="px-4 py-2 bg-gray-600 rounded text-white">
+                <button type="button" onclick="hideNewListModal()" class="px-4 py-2 bg-gray-600/50 hover:bg-gray-600 rounded-lg text-white transition-colors duration-200">
                     Abbrechen
                 </button>
-                <button type="submit" class="btn-primary px-4 py-2 rounded">
+                <button type="submit" class="btn-primary px-4 py-2 rounded-lg">
                     Erstellen
                 </button>
             </div>
@@ -75,18 +77,18 @@
     </div>
 </div>
 
-<div id="addItemModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center">
-    <div class="card p-6 w-full max-w-md">
+<div id="addItemModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center z-50">
+    <div class="card p-6 w-full max-w-md modal">
         <h3 class="text-xl font-bold mb-4">Artikel hinzufügen</h3>
         <form id="addItemForm" class="space-y-4">
             <input type="hidden" name="list_id" id="itemListId">
             <div>
                 <label class="block text-sm font-medium text-gray-300 mb-1">Name</label>
-                <input type="text" name="name" required class="input-field w-full px-4 py-2 rounded">
+                <input type="text" name="name" required class="input-field w-full px-4 py-2 rounded-lg">
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-300 mb-1">Icon</label>
-                <select name="icon" class="input-field w-full px-4 py-2 rounded">
+                <select name="icon" class="input-field w-full px-4 py-2 rounded-lg">
                     <option value="shopping-cart">Einkaufswagen</option>
                     <option value="apple-alt">Apfel</option>
                     <option value="bread-slice">Brot</option>
@@ -98,10 +100,10 @@
                 </select>
             </div>
             <div class="flex justify-end space-x-2">
-                <button type="button" onclick="hideAddItemModal()" class="px-4 py-2 bg-gray-600 rounded text-white">
+                <button type="button" onclick="hideAddItemModal()" class="px-4 py-2 bg-gray-600/50 hover:bg-gray-600 rounded-lg text-white transition-colors duration-200">
                     Abbrechen
                 </button>
-                <button type="submit" class="btn-primary px-4 py-2 rounded">
+                <button type="submit" class="btn-primary px-4 py-2 rounded-lg">
                     Hinzufügen
                 </button>
             </div>
@@ -111,22 +113,39 @@
 
 <script>
 function showNewListModal() {
-    document.getElementById('newListModal').classList.remove('hidden');
+    const modal = document.getElementById('newListModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('fade-in');
 }
 
 function hideNewListModal() {
-    document.getElementById('newListModal').classList.add('hidden');
+    const modal = document.getElementById('newListModal');
+    modal.classList.add('hidden');
 }
 
 function showAddItemModal(listId) {
     document.getElementById('itemListId').value = listId;
-    document.getElementById('addItemModal').classList.remove('hidden');
+    const modal = document.getElementById('addItemModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('fade-in');
 }
 
 function hideAddItemModal() {
-    document.getElementById('addItemModal').classList.add('hidden');
+    const modal = document.getElementById('addItemModal');
+    modal.classList.add('hidden');
 }
 
-// Hier werden später die AJAX-Funktionen für die Interaktionen implementiert
+// Schließen der Modals bei Klick außerhalb
+document.addEventListener('click', (e) => {
+    const newListModal = document.getElementById('newListModal');
+    const addItemModal = document.getElementById('addItemModal');
+    
+    if (e.target === newListModal) {
+        hideNewListModal();
+    }
+    if (e.target === addItemModal) {
+        hideAddItemModal();
+    }
+});
 </script>
 {% endblock %} 
